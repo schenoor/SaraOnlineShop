@@ -1,0 +1,88 @@
+﻿@using MyMVCProject.Models
+@model IEnumerable<ProductsData>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+}
+
+@{
+    ViewBag.Title = "OrderRequest";   
+}
+
+<h2>OrderRequest</h2>
+
+
+<ol id="orderProcess">
+    <li><span class="step-number">1</span>Choose Item</li>
+    <li class="current"><span class="step-number">2</span>Details &amp; Submit</li>
+    <li><span class="step-number">3</span>Receipt</li>
+</ol>
+
+
+@foreach (var product in Model)
+{
+<h1>Place Your Order: @product.Name</h1>
+<form action="/Order/PlaceOrder" method="post">
+    
+
+    <fieldset class="no-legend">
+        <legend>Place Your Order</legend>
+        <img class="product-image order-image" src="~/Images/Products/Thumbnails/@product.Picture" alt="Image of @product.Name" />
+        <ul class="orderPageList" data-role="listview">            
+            <li>
+                <div>
+                    <p class="description">@product.Description</p>
+                </div>
+            </li>
+            <li class="email">
+                <div class="fieldcontainer" data-role="fieldcontain">
+                    <label for="orderEmail">Your Email Address</label>
+                    <input type="text" id="orderEmail" name="orderEmail" onblur="orderEmail_TextChanged"/>
+                    <div>@Html.ValidationMessage("orderEmail","Please enter an Email.")</div>
+                </div>
+            </li>
+            <li class="shipping">
+                <div class="fieldcontainer" data-role="fieldcontain">
+                    <label for="orderShipping">Shipping Address</label>
+                    <textarea rows="4" id="orderShipping" name="orderShipping" ></textarea>
+                    <div>@Html.ValidationMessage("orderShipping")</div>
+                </div>
+            </li>
+            <li class="quantity">
+                <div class="fieldcontainer" data-role="fieldcontain">
+                    <label for="orderQty">Quantity</label>
+                    <input type="text" id="orderQty" name="orderQty" value="1" />
+                    x
+                    <span id="orderPrice">@string.Format("{0:f}", product.Price)</span>
+                    =
+                    <span id="orderTotal">@string.Format("{0:f}", product.Price)</span>
+                </div>
+            </li>
+        </ul>
+        <p class="actions">
+            <input type="hidden" name="ProductId" value="@product.ID" />
+            <input type="submit" value="Place Order" data-role="none" data-inline="true" />
+        </p>
+    </fieldset>
+</form>
+}
+
+<script type="text/javascript">
+    $(function () {
+        var price = parseFloat($("#orderPrice").text()).toFixed(2),
+            total = $("#orderTotal"),
+            orderQty = $("#orderQty");
+
+        $("#orderQty").change(function () {
+            var quantity = parseInt(orderQty.val());
+            if (!quantity || quantity < 1) {
+                orderQty.val(1);
+                quantity = 1;
+            } else if (quantity.toString() !== orderQty.val()) {
+                orderQty.val(quantity);
+            }
+            total.text("Rs." + (price * quantity).toFixed(2));
+        });
+    });
+</script>

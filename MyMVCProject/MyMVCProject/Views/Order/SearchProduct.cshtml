@@ -1,0 +1,80 @@
+﻿@using MyMVCProject.Models
+@model IEnumerable<ProductsData>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+}
+
+@{
+    ViewBag.Title = "SearchProduct";
+    var productsNotFound = ViewData["NoProducts"] != null;
+}
+
+<h2>SearchProduct</h2>
+
+<form action="/Order/SearchProduct" method="post">
+    <fieldset class="no-legend">
+        <p class="actions" style="text-align:center">            
+            <input type="text" id="searchProduct" name="searchProduct" value="@ViewBag.SearchString" />    
+            <input type="submit" value="Search" data-role="none" data-inline="true" />    
+         </p>    
+    </fieldset>
+</form>
+
+<h2>Search Results for "@ViewBag.SearchString"</h2>  
+  
+@if (productsNotFound)
+{
+    <h4>No results found for <b>@ViewBag.SearchString</b></h4>
+}
+else
+{
+    <div id="productsWrapper">
+        <ul id="products" data-role="listview" data-inset="true">
+            @foreach (var p in Model)
+            {
+                <li class="product">
+                    @{
+                        if (Request.IsAuthenticated)
+                        {
+                            <a href="/Order/OrderRequest/@p.ID" title="Order @p.Name">
+                                @*<img class="hide-from-desktop" src="~/Images/Products/Thumbnails/@p.Picture" alt="Image of @p.Name" />*@
+
+                                <div class="productInfo">
+                                    <h2>@p.Name</h2>
+                                    <img class="product-image hide-from-mobile" src="/Images/Products/Thumbnails/@p.Picture" alt="Image of @p.Name" />
+                                    <p class="description">@p.Description</p>
+                                    @*<p class="price hide-from-desktop">Rs.@string.Format("{0:f}", p.Price)</p>*@
+                                </div>
+                            </a>
+                            <!-- Desktop only -->
+                            <div class="action  hide-from-mobile">
+                                <p class="price">Rs.@string.Format("{0:f}", p.Price)</p>
+                                <a class="order-button" href="/Order/OrderRequest/@p.ID" title="Order @p.Name">Order Now</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <a href="/Account/Login" title="Login">
+                                @*<img class="hide-from-desktop" src="~/Images/Products/Thumbnails/@p.Picture" alt="Image of @p.Name" />*@
+
+                                <div class="productInfo">
+                                    <h2>@p.Name</h2>
+                                    <img class="product-image hide-from-mobile" src="/Images/Products/Thumbnails/@p.Picture" alt="Image of @p.Name" />
+                                    <p class="description">@p.Description</p>
+                                    @*<p class="price hide-from-desktop">Rs.@string.Format("{0:f}", p.Price)</p>*@
+                                </div>
+                            </a>
+                            <!-- Desktop only -->
+                            <div class="action  hide-from-mobile">
+                                <p class="price">Rs.@string.Format("{0:f}", p.Price)</p>
+                                <a class="order-button" href="/Account/Login" title="Login">Order Now</a>
+                            </div>
+                        }
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+}
